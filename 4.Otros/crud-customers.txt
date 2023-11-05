@@ -1,0 +1,102 @@
+
+ALTER TABLE Orders
+DROP CONSTRAINT FK_Orders_Customers;
+
+-- Agrega una nueva restricción de clave foránea con modificaciones
+ALTER TABLE Orders
+ADD CONSTRAINT FK_Orders_Customers FOREIGN KEY (CustomerID)
+REFERENCES Customers(CustomerID)
+ON UPDATE CASCADE
+ON DELETE CASCADE;
+
+CREATE PROCEDURE GetAllCustomers
+
+AS
+BEGIN
+
+select CustomerID as id, CompanyName as nombre,Address as direccion, City as ciudad, Country as pais, Phone as telefono 
+FROM Customers
+	Order by CustomerID DESC
+
+END
+
+GO
+
+-- Alter Procedure to Select Employee by ID
+CREATE PROCEDURE GetCustomerByID
+    @id nchar(5)
+AS
+BEGIN
+        DECLARE @CustomerCount INT;
+
+        SELECT @CustomerCount = COUNT(*) 
+        FROM Customers
+        WHERE CustomerId = @id;
+
+        IF @CustomerCount = 0
+        BEGIN
+            RAISERROR('No se encontró una Categoria con el ID especificado', 16, 1);
+        END
+        ELSE
+        BEGIN
+			select CustomerID as id, CompanyName as nombre,Address as direccion, City as ciudad, Country as pais, Phone as telefono 
+			FROM Customers
+            WHERE CustomerId = @id;
+        END
+END;
+GO
+
+
+-- Insert:
+CREATE PROCEDURE InsertCustomer
+	@id nchar(5),
+	@nombre nvarchar(40),
+	@direccion nvarchar(60),
+	@ciudad nvarchar(15),
+	@pais nvarchar(15),
+	@telefono nvarchar(24)
+AS
+BEGIN
+    INSERT INTO Customers(CustomerID,CompanyName, Address,City, Country, Phone)
+    VALUES (@id,@nombre,@direccion,@ciudad,@pais,@telefono); -- Corregir el orden de las columnas y los valores
+END;
+GO
+
+
+-- Update:
+create PROCEDURE UpdateCustomer
+	@idActual nchar(5),
+	@idNuevo nchar(5),
+	@nombre nvarchar(40),
+	@direccion nvarchar(60),
+	@ciudad nvarchar(15),
+	@pais nvarchar(15),
+	@telefono nvarchar(24)
+AS
+BEGIN
+
+    UPDATE Customers
+    SET CustomerID = @idNuevo,CompanyName = @nombre,[Address] = @direccion,
+	City = @ciudad, Country = @pais, Phone = @telefono
+	WHERE CustomerID = @idActual
+
+    IF @@ROWCOUNT = 0
+    BEGIN
+        RAISERROR('No se actualizó ningún registro con el ID especificado', 16, 1);
+    END
+END
+GO
+
+
+-- Delete:
+CREATE PROCEDURE DeleteCustomer
+    @id nchar(5)
+AS
+BEGIN
+
+    DELETE FROM Customers
+    WHERE CustomerID = @id;
+
+	end
+
+GO

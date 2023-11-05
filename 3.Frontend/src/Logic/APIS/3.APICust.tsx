@@ -1,0 +1,1 @@
+export const APICust: string = "http://localhost:83/customer";

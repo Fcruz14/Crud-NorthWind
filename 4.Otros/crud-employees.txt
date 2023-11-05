@@ -1,0 +1,89 @@
+
+-- Stored Procedures
+
+--Select de todo Employees
+CREATE PROCEDURE GetAllEmployees
+AS
+BEGIN
+	SELECT EmployeeID as id,FirstName as nombre,LastName as apellido,City as 
+	ciudad,Country as pais FROM Employees
+
+END
+
+GO
+-- Alter Procedure to Select Employee by ID
+CREATE PROCEDURE GetEmployeeByID
+    @id INT
+AS
+BEGIN
+
+        DECLARE @EmployeeCount INT;
+
+        SELECT @EmployeeCount = COUNT(*) 
+        FROM Employees
+        WHERE EmployeeID = @id;
+
+        IF @EmployeeCount = 0
+        BEGIN
+            RAISERROR('No se encontró un empleado con el ID especificado', 16, 1);
+        END
+        ELSE
+        BEGIN
+            SELECT EmployeeID as id, FirstName as nombre, LastName as apellido, City as ciudad, Country as pais 
+            FROM Employees
+            WHERE EmployeeID = @id;
+        END
+
+
+END;
+GO
+
+
+-- Insert:
+CREATE PROCEDURE InsertEmployees
+    @FirstName NVARCHAR(10),
+	@LastName NVARCHAR(20),
+    @City nvarchar(15),
+    @Country NVARCHAR(15)
+AS
+BEGIN
+    INSERT INTO Employees (LastName, FirstName, City, Country)
+    VALUES (@LastName, @FirstName, @City, @Country); -- Corregir el orden de las columnas y los valores
+END;
+GO
+
+-- Update:
+CREATE PROCEDURE UpdateEmployees
+    @id INT,
+    @Nombre NVARCHAR(10),
+    @Apellido NVARCHAR(20),
+    @Ciudad NVARCHAR(15),
+    @Pais NVARCHAR(15)
+AS
+BEGIN
+
+    UPDATE Employees
+    SET LastName = @Apellido, FirstName = @Nombre,
+        City = @Ciudad, Country = @Pais
+    WHERE EmployeeID = @id;
+
+    IF @@ROWCOUNT = 0
+    BEGIN
+        RAISERROR('No se actualizó ningún registro con el ID especificado', 16, 1);
+    END
+END
+GO
+
+
+-- Delete:
+CREATE PROCEDURE DeleteEmployees
+    @id INT
+AS
+BEGIN
+
+    DELETE FROM Employees
+    WHERE EmployeeID = @id;
+
+	end
+
+GO

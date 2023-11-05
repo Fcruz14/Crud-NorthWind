@@ -1,0 +1,95 @@
+
+ALTER TABLE Products
+DROP CONSTRAINT FK_Products_Categories;
+
+-- Agrega una nueva restricción de clave foránea con modificaciones
+ALTER TABLE Products
+ADD CONSTRAINT FK_Products_Categories FOREIGN KEY (CategoryID)
+REFERENCES Categories(CategoryID)
+ON UPDATE CASCADE
+ON DELETE CASCADE;
+
+go
+CREATE PROCEDURE GetAllCategories
+
+AS
+BEGIN
+
+SELECT CategoryID as id, CategoryName as nombre, Description as descripcion FROM Categories
+
+END
+
+GO
+
+-- Alter Procedure to Select Employee by ID
+CREATE PROCEDURE GetCategoryByID
+    @id INT
+AS
+BEGIN
+
+        DECLARE @CategoryCount INT;
+
+        SELECT @CategoryCount = COUNT(*) 
+        FROM Categories
+        WHERE CategoryID = @id;
+
+        IF @CategoryCount = 0
+        BEGIN
+            RAISERROR('No se encontró una Categoria con el ID especificado', 16, 1);
+        END
+        ELSE
+        BEGIN
+			select CategoryID as id, CategoryName as nombre, Description as descripcion
+			FROM Categories
+            WHERE CategoryID = @id;
+        END
+
+
+END;
+GO
+
+
+-- Insert:
+CREATE PROCEDURE InsertCategory
+	@nombre nvarchar(15),
+	@Descripcion ntext
+AS
+BEGIN
+    INSERT INTO Categories (CategoryName,Description)
+    VALUES (@nombre,@Descripcion); -- Corregir el orden de las columnas y los valores
+END;
+GO
+
+
+-- Update:
+create PROCEDURE UpdateCategory
+    @id INT,
+    @nombre NVARCHAR(10),
+    @descripcion ntext
+AS
+BEGIN
+
+    UPDATE Categories
+    SET CategoryName = @nombre,[Description] = @descripcion
+	WHERE CategoryID = @id
+
+    IF @@ROWCOUNT = 0
+    BEGIN
+        RAISERROR('No se actualizó ningún registro con el ID especificado', 16, 1);
+    END
+END
+GO
+
+
+-- Delete:
+CREATE PROCEDURE DeleteCategory
+    @id INT
+AS
+BEGIN
+
+    DELETE FROM Categories
+    WHERE CategoryID = @id;
+
+	end
+
+GO

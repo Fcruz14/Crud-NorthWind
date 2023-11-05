@@ -1,0 +1,1 @@
+export const APILogin: string = "http://localhost:90/login";

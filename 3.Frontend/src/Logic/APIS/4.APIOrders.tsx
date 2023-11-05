@@ -1,0 +1,1 @@
+export const APIOrder: string = "http://localhost:84/order";
